@@ -1,15 +1,13 @@
 use std::{error::Error, fs, path::PathBuf};
 
-fn argmax(values: &[i64]) -> usize {
-    let mut max_index = 0;
-    let mut max_value = values[0];
-    for (i, &value) in values.iter().enumerate().skip(1) {
-        if value > max_value {
-            max_value = value;
-            max_index = i;
-        }
-    }
-    max_index
+fn max_pos_value(values: &[i64]) -> (usize, i64) {
+    // Find the position and value of the maximum element in values
+    let max_value = values.iter().max().expect("values should not be empty");
+    let idx = values
+        .iter()
+        .position(|&v| v == *max_value)
+        .expect("max_value should be in values");
+    (idx, *max_value)
 }
 
 fn compute_answer(puzzle_input: &str, part_two: bool) -> i64 {
@@ -31,21 +29,17 @@ fn process_line(line: &str, part_two: bool) -> i64 {
 
     let digits_len = digits.len();
 
-    let total_digits;
-    if part_two {
-        total_digits = 12;
-    } else {
-        total_digits = 2;
-    }
+    let total_digits = if part_two { 12 } else { 2 };
 
-    let mut answer = 0;
-    let mut max_index = 0;
-
-    for remaining_digits in (0..total_digits).rev() {
-        max_index = argmax(&digits[(max_index)..(digits_len - remaining_digits)]) + max_index;
-        answer = (answer * 10) + digits[max_index];
-        max_index += 1;
-    }
+    let (answer, _) =
+        (0..total_digits)
+            .rev()
+            .fold((0, 0), |(answer, mut max_index), remaining_digits| {
+                let (idx, max_value) =
+                    max_pos_value(&digits[(max_index)..(digits_len - remaining_digits)]);
+                max_index += idx;
+                (answer * 10 + max_value, max_index + 1)
+            });
     answer
 }
 
