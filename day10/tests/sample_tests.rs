@@ -15,5 +15,5 @@ fn test_part_two() {
     let mut input_path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     input_path.push("tests/data/sample_input.txt");
     let answer = day10::run(input_path, true).unwrap();
-    assert_eq!(answer, 24);
+    assert_eq!(answer, 33);
 }
